@@ -1,6 +1,8 @@
 import { Form } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { PrismaClient } from '@prisma/client'
+
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,10 +12,25 @@ export const meta: MetaFunction = () => {
 };
 
 export async function action ({request}: ActionFunctionArgs) {
+  const db = new PrismaClient()
+  // use `prisma` in your application to read and write data in your DB
+
   let formData = await request.formData();
-  let json = Object.fromEntries(formData);
-  console.log(json);
+  let { date, type, text } = Object.fromEntries(formData);
+
+  if (typeof date !== "string" || typeof type !== "string" || typeof text !== "string") {
+    throw new Error("Bad Request");
+  }
+  console.log(date, type, text);
   
+  await db.entry.create({
+    data: {
+      date: new Date(date),
+      type: type,
+      text: text,
+    },
+  });
+
   return redirect('/');
 }
 
@@ -46,7 +63,7 @@ export default function Index() {
               Learnings
             </label>
             <label>
-              <input className="ml-4" type="radio" name="category" value="intresting_things"/>
+              <input className="ml-4" type="radio" name="category" value="intresting-things"/>
               Intresting thing
             </label>
           </div>
