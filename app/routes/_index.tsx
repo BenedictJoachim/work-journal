@@ -55,15 +55,15 @@ export default function Index() {
 
           <div className="mt-2 sapce-x-8">
             <label>
-              <input className="mr-0" type="radio" name="category" value="work"/>
+              <input className="mr-0" type="radio" name="type" value="work"/>
               Work
             </label>
             <label>
-              <input className="ml-4" type="radio" name="category" value="learnings"/>
+              <input className="ml-4" type="radio" name="type" value="learnings"/>
               Learnings
             </label>
             <label>
-              <input className="ml-4" type="radio" name="category" value="intresting-things"/>
+              <input className="ml-4" type="radio" name="type" value="intresting-things"/>
               Intresting thing
             </label>
           </div>
