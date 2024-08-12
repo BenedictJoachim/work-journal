@@ -21,7 +21,6 @@ export async function action ({request}: ActionFunctionArgs) {
   if (typeof date !== "string" || typeof type !== "string" || typeof text !== "string") {
     throw new Error("Bad Request");
   }
-  console.log(date, type, text);
   
   return db.entry.create({
     data: {
@@ -37,7 +36,6 @@ export async function loader(){
   let db = new PrismaClient();
   let entries = await db.entry.findMany();
 
-  console.log(entries);
   return entries;
 }
 
@@ -56,7 +54,6 @@ export default function Index() {
     return memo;
   }, {})
 
-  console.log(entriesByWeek);
   let weeks = Object.keys(entriesByWeek)
     .sort((a, b) => a.localeCompare(b))
     .map((dateString) => ({
@@ -117,8 +114,8 @@ export default function Index() {
 
 
 {weeks.map((week)=>
-    <div key={week.dateString} className="mt-4">
-      <p className="font-bold">Week of {format(parseISO(week.dateString), "MMMM do")}<sup>th</sup></p>
+    <div key={week.dateString} className="mt-4 border-l-4 border-indigo-500 py-1 pl-2">
+      <p className="font-bold">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
 
     <div className="mt-4 space-y-4">
       {week.work.length > 0 && (
@@ -126,7 +123,17 @@ export default function Index() {
            <p>Work</p>
              <ul className="ml-8 list-disc">
               {week.work.map(entry => (
-                <li key={entry.id}>{entry.text}</li>
+                <li 
+                  key={entry.id} 
+                  className='group'
+                >
+                    {entry.text} 
+                    <span 
+                      className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100'
+                    >
+                        Edit
+                    </span>
+                </li>
               ) )}
              </ul>
         </div>
@@ -136,7 +143,17 @@ export default function Index() {
            <p>Learnings</p>
              <ul className="ml-8 list-disc">
               {week.learnings.map(entry => (
-                <li key={entry.id}>{entry.text}</li>
+                <li 
+                  key={entry.id}
+                  className='group'
+                >
+                  {entry.text}
+                  <span
+                    className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100'
+                  >
+                    Edit
+                  </span>
+                </li>
               ) )}
              </ul>
         </div>
@@ -146,7 +163,17 @@ export default function Index() {
            <p>Intresting Things</p>
              <ul className="ml-8 list-disc">
               {week.intrestingThings.map(entry => (
-                <li key={entry.id}>{entry.text}</li>
+                <li 
+                  key={entry.id}
+                  className='group'
+                >
+                  {entry.text}
+                  <span
+                    className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100'
+                  >
+                    Edit
+                  </span>
+                </li>
               ) )}
              </ul>
         </div>
