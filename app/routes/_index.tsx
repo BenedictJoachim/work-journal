@@ -1,4 +1,4 @@
-import { Form, useFetcher } from "@remix-run/react";
+import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { PrismaClient } from '@prisma/client'
@@ -34,10 +34,21 @@ export async function action ({request}: ActionFunctionArgs) {
 
 }
 
+export async function loader(){
+  let db = new PrismaClient();
+  let entries = await db.entry.findMany();
+
+  console.log(entries);
+  return entries;
+}
+
 export default function Index() {
   let fetcher = useFetcher();
-   let textAreaRef = useRef<HTMLTextAreaElement>(null);
+  let textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  let entries = useLoaderData<typeof loader>();
+  console.log(entries);
+  
    useEffect(() =>{
     if(fetcher.state === "idle" && textAreaRef.current){
       textAreaRef.current.value = ''
