@@ -3,6 +3,7 @@ import { redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { PrismaClient } from '@prisma/client'
 import { format } from "date-fns";
+import { useEffect, useRef } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -36,8 +37,15 @@ export async function action ({request}: ActionFunctionArgs) {
 
 export default function Index() {
   let fetcher = useFetcher();
-  console.log(fetcher.state);
+   let textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+   useEffect(() =>{
+    if(fetcher.state === "idle" && textAreaRef.current){
+      textAreaRef.current.value = ''
+      textAreaRef.current.focus()
+
+    }
+   }, [fetcher.state])
 
   return (
   <div className="p-10">
@@ -59,7 +67,7 @@ export default function Index() {
             </div>
             <div className="mt-2 sapce-x-8">
               <label>
-                <input required className="mr-0" type="radio" name="type" value="work"/>
+                <input required defaultChecked className="mr-0" type="radio" name="type" value="work"/>
                 Work
               </label>
               <label>
@@ -72,7 +80,7 @@ export default function Index() {
               </label>
             </div>
             <div className="mt-2">
-                <textarea required name="text" className="w-full text-gray-700" placeholder="Write your entry..." />
+                <textarea required ref={textAreaRef} name="text" className="w-full text-gray-700" placeholder="Write your entry..." />
             </div>
             <div className="mt-2 text-right">
               <button className="py-1 px-4 font-medium bg-blue-500 text-white" type="submit">
