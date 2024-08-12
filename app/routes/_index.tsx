@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, useFetcher } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { PrismaClient } from '@prisma/client'
@@ -35,6 +35,10 @@ export async function action ({request}: ActionFunctionArgs) {
 }
 
 export default function Index() {
+  let fetcher = useFetcher();
+  console.log(fetcher.state);
+
+
   return (
   <div className="p-10">
     <h1 className="text-5xl">Work Journal</h1>
@@ -45,17 +49,17 @@ export default function Index() {
     </div>
 
     <div className="my-8 border p-2">
-      <Form method="post">
+      <fetcher.Form method="post">
         <p className="italic">Create an entry</p>
 
         <div className="mt-4">
           <div>
-            <input type="date" name="date" className="text-gray-700" />
+            <input required type="date" name="date" className="text-gray-700" />
           </div>
 
           <div className="mt-2 sapce-x-8">
             <label>
-              <input className="mr-0" type="radio" name="type" value="work"/>
+              <input required className="mr-0" type="radio" name="type" value="work"/>
               Work
             </label>
             <label>
@@ -69,14 +73,16 @@ export default function Index() {
           </div>
 
           <div className="mt-2">
-              <textarea name="text" className="w-full text-gray-700" placeholder="Write your entry..." />
+              <textarea required name="text" className="w-full text-gray-700" placeholder="Write your entry..." />
           </div>
 
           <div className="mt-2 text-right">
-            <button className="py-1 px-4 font-medium bg-blue-500 text-white" type="submit">Save</button>
+            <button className="py-1 px-4 font-medium bg-blue-500 text-white" type="submit">
+              {fetcher.state === "submitting" ? "Saving..." : "Save"}
+            </button>
           </div>
         </div>
-      </Form>
+      </fetcher.Form>
     </div>
 
 
