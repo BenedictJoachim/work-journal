@@ -1,8 +1,7 @@
-import { Form, useFetcher, useLoaderData } from "@remix-run/react";
-import { redirect } from "@remix-run/node";
+import { PrismaClient } from '@prisma/client';
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { PrismaClient } from '@prisma/client'
-import { format } from "date-fns";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { format, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
 
 export const meta: MetaFunction = () => {
@@ -45,15 +44,32 @@ export async function loader(){
 export default function Index() {
   let fetcher = useFetcher();
   let textAreaRef = useRef<HTMLTextAreaElement>(null);
-
   let entries = useLoaderData<typeof loader>();
-  console.log(entries);
+
+  let entriesByWeek = entries.reduce<Record<string, typeof entries>>((memo, entry) => {
+    let sunday = startOfWeek(parseISO(entry.date));
+    let sundayString = format(sunday, "yyyy-MM-dd");
+
+    memo[sundayString] ||= [];
+    memo[sundayString].push(entry);
+
+    return memo;
+  }, {})
+
+  console.log(entriesByWeek);
+  let weeks = Object.keys(entriesByWeek)
+    .sort((a, b) => a.localeCompare(b))
+    .map((dateString) => ({
+      dateString,
+      work: entriesByWeek[dateString].filter(entry => entry.type === "work"),
+      learnings: entriesByWeek[dateString].filter(entry => entry.type === "learnings"),
+      intrestingThings: entriesByWeek[dateString].filter(entry => entry.type === "intresting-things"),
+    }))
   
    useEffect(() =>{
     if(fetcher.state === "idle" && textAreaRef.current){
       textAreaRef.current.value = ''
       textAreaRef.current.focus()
-
     }
    }, [fetcher.state])
 
@@ -62,9 +78,6 @@ export default function Index() {
     <h1 className="text-5xl">Work Journal</h1>
     <p className="mt-2 text-lg text-gray-400">Learnings and doings. Updated weekly</p>
 
-    <div className="mt-4">
-      <p className="font-bold">Week of February 20<sup>th</sup></p>
-    </div>
 
     <div className="my-8 border p-2">
       <fetcher.Form method="post">
@@ -103,30 +116,45 @@ export default function Index() {
     </div>
 
 
+{weeks.map((week)=>
+    <div key={week.dateString} className="mt-4">
+      <p className="font-bold">Week of {format(parseISO(week.dateString), "MMMM do")}<sup>th</sup></p>
+
     <div className="mt-4 space-y-4">
-      <div className="mt-3">
-        <p>Work</p>
-        <ul className="ml-8 list-disc">
-          <li>First item</li>
-          <li>Second item</li>
-        </ul>
-      </div>
-      <div className="mt-3">
-        <p>Learnings</p>
-        <ul className="ml-8 list-disc">
-          <li>First item</li>
-          <li>Second item</li>
-        </ul>
-      </div>
-      <div className="mt-3">
-        <p>Intresting things</p>
-        <ul className="ml-8 list-disc">
-          <li>First item</li>
-          <li>Second item</li>
-        </ul>
-      </div>
+      {week.work.length > 0 && (
+        <div className="mt-3">
+           <p>Work</p>
+             <ul className="ml-8 list-disc">
+              {week.work.map(entry => (
+                <li key={entry.id}>{entry.text}</li>
+              ) )}
+             </ul>
+        </div>
+      )}
+      {week.learnings.length > 0 && (
+        <div className="mt-3">
+           <p>Learnings</p>
+             <ul className="ml-8 list-disc">
+              {week.learnings.map(entry => (
+                <li key={entry.id}>{entry.text}</li>
+              ) )}
+             </ul>
+        </div>
+      )}
+      {week.intrestingThings.length > 0 && (
+        <div className="mt-3">
+           <p>Intresting Things</p>
+             <ul className="ml-8 list-disc">
+              {week.intrestingThings.map(entry => (
+                <li key={entry.id}>{entry.text}</li>
+              ) )}
+             </ul>
+        </div>
+      )}
     </div>
-  </div> 
+    </div>
+)}
+</div> 
 
 );
 }
