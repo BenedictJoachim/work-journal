@@ -24,7 +24,7 @@ export async function action ({request}: ActionFunctionArgs) {
   }
   console.log(date, type, text);
   
-  await db.entry.create({
+  return db.entry.create({
     data: {
       date: new Date(date),
       type: type,
@@ -32,7 +32,6 @@ export async function action ({request}: ActionFunctionArgs) {
     },
   });
 
-  return redirect('/');
 }
 
 export default function Index() {
