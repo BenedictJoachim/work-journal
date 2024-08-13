@@ -36,8 +36,10 @@ export async function loader(){
   let db = new PrismaClient();
   let entries = await db.entry.findMany();
 
-  return entries;
-}
+  return entries.map((entry) => ({
+    ...entry,
+    date: entry.date.toISOString().substring(0, 10),
+  }));}
 
 export default function Index() {
   let fetcher = useFetcher();
@@ -139,7 +141,8 @@ export default function Index() {
            <p>Intresting Things</p>
              <ul className="ml-8 list-disc">
               {week.intrestingThings.map(entry => (
-                <EntryListItem key={entry.id} entry={entry} />              ) )}
+                <EntryListItem key={entry.id} entry={entry} />  
+                ) )}
              </ul>
         </div>
       )}
@@ -151,7 +154,7 @@ export default function Index() {
 );
 }
 
-function EntryListItem({ entry }: {entry: Awaited<ReturnType<typeof loader>>[number]}){
+function EntryListItem({ entry, }: {entry: Awaited<ReturnType<typeof loader>>[number]}){
   return (
     <li 
     className='group'
