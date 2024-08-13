@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
 
@@ -71,11 +71,7 @@ export default function Index() {
    }, [fetcher.state])
 
   return (
-  <div className="p-10">
-    <h1 className="text-5xl">Work Journal</h1>
-    <p className="mt-2 text-lg text-gray-400">Learnings and doings. Updated weekly</p>
-
-
+  <div className="">
     <div className="my-8 border p-2">
       <fetcher.Form method="post">
         <p className="italic">Create an entry</p>
@@ -114,7 +110,7 @@ export default function Index() {
 
 
 {weeks.map((week)=>
-    <div key={week.dateString} className="mt-4 border-l-4 border-indigo-500 py-1 pl-2">
+    <div key={week.dateString} className="mt-4 border-l-8 border-indigo-500 py-1 pl-2">
       <p className="font-bold">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
 
     <div className="mt-4 space-y-4">
@@ -123,18 +119,8 @@ export default function Index() {
            <p>Work</p>
              <ul className="ml-8 list-disc">
               {week.work.map(entry => (
-                <li 
-                  key={entry.id} 
-                  className='group'
-                >
-                    {entry.text} 
-                    <span 
-                      className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100'
-                    >
-                        Edit
-                    </span>
-                </li>
-              ) )}
+                <EntryListItem key={entry.id} entry={entry} />
+                ) )}
              </ul>
         </div>
       )}
@@ -143,17 +129,7 @@ export default function Index() {
            <p>Learnings</p>
              <ul className="ml-8 list-disc">
               {week.learnings.map(entry => (
-                <li 
-                  key={entry.id}
-                  className='group'
-                >
-                  {entry.text}
-                  <span
-                    className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100'
-                  >
-                    Edit
-                  </span>
-                </li>
+                <EntryListItem key={entry.id} entry={entry} />
               ) )}
              </ul>
         </div>
@@ -163,18 +139,7 @@ export default function Index() {
            <p>Intresting Things</p>
              <ul className="ml-8 list-disc">
               {week.intrestingThings.map(entry => (
-                <li 
-                  key={entry.id}
-                  className='group'
-                >
-                  {entry.text}
-                  <span
-                    className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100'
-                  >
-                    Edit
-                  </span>
-                </li>
-              ) )}
+                <EntryListItem key={entry.id} entry={entry} />              ) )}
              </ul>
         </div>
       )}
@@ -184,4 +149,19 @@ export default function Index() {
 </div> 
 
 );
+}
+
+function EntryListItem({ entry }: {entry: Awaited<ReturnType<typeof loader>>[number]}){
+  return (
+    <li 
+    className='group'
+  >
+      {entry.text} 
+      <Link 
+        className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100' to={`entries/${entry.id}/edit`}      >
+          Edit
+      </Link>
+  </li>
+
+  )
 }
