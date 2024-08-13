@@ -1,9 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
 import EntryForm from '~/components/entry-form';
+import { getSession } from '~/session';
 
 export const meta: MetaFunction = () => {
   return [
@@ -33,19 +34,23 @@ export async function action ({request}: ActionFunctionArgs) {
 
 }
 
-export async function loader(){
+export async function loader({request}: LoaderFunctionArgs){
+  let session = await getSession(request.headers.get("cookie"));
   let db = new PrismaClient();
   let entries = await db.entry.findMany();
 
-  return entries.map((entry) => ({
+  return {
+    session: session.data,
+    entries: entries.map((entry) => ({
     ...entry,
     date: entry.date.toISOString().substring(0, 10),
-  }));}
+  }))}
+}
 
 export default function Index() {
   let fetcher = useFetcher();
   let textAreaRef = useRef<HTMLTextAreaElement>(null);
-  let entries = useLoaderData<typeof loader>();
+  let { session, entries } = useLoaderData<typeof loader>();
 
   let entriesByWeek = entries.reduce<Record<string, typeof entries>>((memo, entry) => {
     let sunday = startOfWeek(parseISO(entry.date));
@@ -117,7 +122,7 @@ export default function Index() {
 );
 }
 
-function EntryListItem({ entry, }: {entry: Awaited<ReturnType<typeof loader>>[number]}){
+function EntryListItem({ entry, }: {entry: Awaited<ReturnType<typeof loader>>["entries"][number]}){
   return (
     <li 
     className='group'
