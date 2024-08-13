@@ -3,6 +3,7 @@ import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
+import EntryForm from '~/components/entry-form';
 
 export const meta: MetaFunction = () => {
   return [
@@ -65,55 +66,18 @@ export default function Index() {
       intrestingThings: entriesByWeek[dateString].filter(entry => entry.type === "intresting-things"),
     }))
   
-   useEffect(() =>{
-    if(fetcher.state === "idle" && textAreaRef.current){
-      textAreaRef.current.value = ''
-      textAreaRef.current.focus()
-    }
-   }, [fetcher.state])
+   
 
   return (
   <div className="">
     <div className="my-8 border p-2">
-      <fetcher.Form method="post">
-        <p className="italic">Create an entry</p>
-
-        <fieldset className="disabled:opacity-80" disabled={fetcher.state === "submitting"}>
-          <div className="mt-4">
-            <div>
-              <input required type="date" name="date" defaultValue={format(new Date, "yyyy-MM-dd")} className="text-gray-700" />
-            </div>
-            <div className="mt-2 sapce-x-8">
-              <label>
-                <input required defaultChecked className="mr-0" type="radio" name="type" value="work"/>
-                Work
-              </label>
-              <label>
-                <input className="ml-4" type="radio" name="type" value="learnings"/>
-                Learnings
-              </label>
-              <label>
-                <input className="ml-4" type="radio" name="type" value="intresting-things"/>
-                Intresting thing
-              </label>
-            </div>
-            <div className="mt-2">
-                <textarea required ref={textAreaRef} name="text" className="w-full text-gray-700" placeholder="Write your entry..." />
-            </div>
-            <div className="mt-2 text-right">
-              <button className="py-1 px-4 font-medium bg-blue-500 text-white" type="submit">
-                {fetcher.state === "submitting" ? "Saving..." : "Save"}
-              </button>
-            </div>
-          </div>
-        </fieldset>
-      </fetcher.Form>
+      <EntryForm />
     </div>
 
 
 {weeks.map((week)=>
     <div key={week.dateString} className="mt-4 border-l-8 border-indigo-500 py-1 pl-2">
-      <p className="font-bold">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
+      <p className="font-bold text-indigo-300">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
 
     <div className="mt-4 space-y-4">
       {week.work.length > 0 && (
