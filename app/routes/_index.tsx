@@ -62,8 +62,8 @@ export default function Index() {
     .map((dateString) => ({
       dateString,
       work: entriesByWeek[dateString].filter(entry => entry.type === "work"),
-      learnings: entriesByWeek[dateString].filter(entry => entry.type === "learnings"),
-      intrestingThings: entriesByWeek[dateString].filter(entry => entry.type === "intresting-things"),
+      learnings: entriesByWeek[dateString].filter(entry => entry.type === "learning"),
+      intrestingThings: entriesByWeek[dateString].filter(entry => entry.type === "interesting-thing"),
     }))
   
    
@@ -102,7 +102,7 @@ export default function Index() {
       )}
       {week.intrestingThings.length > 0 && (
         <div className="mt-3">
-           <p>Intresting Things</p>
+           <p>Interesting Things</p>
              <ul className="ml-8 list-disc">
               {week.intrestingThings.map(entry => (
                 <EntryListItem key={entry.id} entry={entry} />  

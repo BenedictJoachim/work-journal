@@ -13,11 +13,11 @@ export default function EntryForm ({entry,}: {entry?: {text: string, type: strin
         textAreaRef.current.value = ''
         textAreaRef.current.focus()
       }
-     }, [fetcher.state])
+     }, [fetcher.state, isInitialRender])
 
     return (
         <fetcher.Form method="post">
-        <fieldset className="disabled:opacity-80" disabled={fetcher.state === "idle"}>
+        <fieldset className="disabled:opacity-80" disabled={fetcher.state !== "idle"}>
           <div className="mt-4">
             <div>
               <input required type="date" name="date" defaultValue={entry?.date ?? format(new Date, "yyyy-MM-dd")} className="text-gray-700" />
@@ -34,7 +34,7 @@ export default function EntryForm ({entry,}: {entry?: {text: string, type: strin
                   type="radio"
                   className="ml-0 ps-2"
                   name="type"
-                  value="work"
+                  value={option.value}
                   defaultChecked={option.value === (entry?.type ?? "work")}
                 />
                 {option.label}
@@ -46,7 +46,7 @@ export default function EntryForm ({entry,}: {entry?: {text: string, type: strin
             </div>
             <div className="mt-2 text-right">
               <button className="py-1 px-4 font-medium bg-blue-500 text-white" type="submit">
-                {fetcher.state === "idle" ? "Saving..." : "Save"}
+                {fetcher.state !== "idle" ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
