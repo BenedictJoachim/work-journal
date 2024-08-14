@@ -14,6 +14,11 @@ export const meta: MetaFunction = () => {
 };
 
 export async function action ({request}: ActionFunctionArgs) {
+  let session = await getSession(request.headers.get("cookie"));
+  if (!session.data.isAdmin) {
+    throw new Response("Not authenticated", { status: 401 });
+  }
+
   const db = new PrismaClient()
   // use `prisma` in your application to read and write data in your DB
 
@@ -88,7 +93,7 @@ export default function Index() {
               <p>Work</p>
                 <ul className="ml-8 list-disc">
                   {week.work.map(entry => (
-                    <EntryListItem key={entry.id} entry={entry} />
+                    <EntryListItem key={entry.id} entry={entry} canEdit={session.isAdmin} />
                     ) )}
                 </ul>
             </div>
@@ -98,7 +103,7 @@ export default function Index() {
               <p>Learnings</p>
                 <ul className="ml-8 list-disc">
                   {week.learnings.map(entry => (
-                    <EntryListItem key={entry.id} entry={entry} />
+                    <EntryListItem key={entry.id} entry={entry} canEdit={session.isAdmin} />
                   ) )}
                 </ul>
             </div>
@@ -108,7 +113,7 @@ export default function Index() {
               <p>Interesting Things</p>
                 <ul className="ml-8 list-disc">
                   {week.intrestingThings.map(entry => (
-                    <EntryListItem key={entry.id} entry={entry} />  
+                    <EntryListItem key={entry.id} entry={entry} canEdit={session.isAdmin} />  
                     ) )}
                 </ul>
             </div>
@@ -120,17 +125,18 @@ export default function Index() {
   );
 }
 
-function EntryListItem({ entry, }: {entry: Awaited<ReturnType<typeof loader>>["entries"][number]}){
+function EntryListItem({ entry, canEdit }: {entry: Awaited<ReturnType<typeof loader>>["entries"][number], canEdit: boolean}){
   return (
     <li 
     className='group'
-  >
+    >
       {entry.text} 
-      <Link 
-        className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100' to={`entries/${entry.id}/edit`}      >
-          Edit
-      </Link>
-  </li>
-
+      {canEdit &&
+            <Link 
+              className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100' to={`entries/${entry.id}/edit`}      >
+                Edit
+            </Link>
+      }
+    </li>
   )
 }
