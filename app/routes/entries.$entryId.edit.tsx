@@ -79,7 +79,6 @@ export default function EditPage() {
   return (
     <div className="mt-4">
       <p>Editing entry {entry.id}</p>
-
       <div className="mt-8">
         <EntryForm entry={entry} />
       </div>

@@ -31,7 +31,6 @@ export async function action ({request}: ActionFunctionArgs) {
       text: text,
     },
   });
-
 }
 
 export async function loader({request}: LoaderFunctionArgs){
@@ -70,56 +69,55 @@ export default function Index() {
       learnings: entriesByWeek[dateString].filter(entry => entry.type === "learning"),
       intrestingThings: entriesByWeek[dateString].filter(entry => entry.type === "interesting-thing"),
     }))
-  
-   
 
   return (
-  <div className="">
-    <div className="my-8 border p-2">
-      <EntryForm />
-    </div>
+      <div className="">
+        {session.isAdmin &&( 
+            <div className="my-8 border p-2">
+              <EntryForm />
+            </div>
+        )}
 
+        {weeks.map((week)=>
+        <div key={week.dateString} className="mt-4 border-l-8 border-indigo-500 py-1 pl-2">
+          <p className="font-bold text-indigo-300">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
 
-{weeks.map((week)=>
-    <div key={week.dateString} className="mt-4 border-l-8 border-indigo-500 py-1 pl-2">
-      <p className="font-bold text-indigo-300">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
-
-    <div className="mt-4 space-y-4">
-      {week.work.length > 0 && (
-        <div className="mt-3">
-           <p>Work</p>
-             <ul className="ml-8 list-disc">
-              {week.work.map(entry => (
-                <EntryListItem key={entry.id} entry={entry} />
-                ) )}
-             </ul>
+        <div className="mt-4 space-y-4">
+          {week.work.length > 0 && (
+            <div className="mt-3">
+              <p>Work</p>
+                <ul className="ml-8 list-disc">
+                  {week.work.map(entry => (
+                    <EntryListItem key={entry.id} entry={entry} />
+                    ) )}
+                </ul>
+            </div>
+          )}
+          {week.learnings.length > 0 && (
+            <div className="mt-3">
+              <p>Learnings</p>
+                <ul className="ml-8 list-disc">
+                  {week.learnings.map(entry => (
+                    <EntryListItem key={entry.id} entry={entry} />
+                  ) )}
+                </ul>
+            </div>
+          )}
+          {week.intrestingThings.length > 0 && (
+            <div className="mt-3">
+              <p>Interesting Things</p>
+                <ul className="ml-8 list-disc">
+                  {week.intrestingThings.map(entry => (
+                    <EntryListItem key={entry.id} entry={entry} />  
+                    ) )}
+                </ul>
+            </div>
+          )}
         </div>
-      )}
-      {week.learnings.length > 0 && (
-        <div className="mt-3">
-           <p>Learnings</p>
-             <ul className="ml-8 list-disc">
-              {week.learnings.map(entry => (
-                <EntryListItem key={entry.id} entry={entry} />
-              ) )}
-             </ul>
         </div>
-      )}
-      {week.intrestingThings.length > 0 && (
-        <div className="mt-3">
-           <p>Interesting Things</p>
-             <ul className="ml-8 list-disc">
-              {week.intrestingThings.map(entry => (
-                <EntryListItem key={entry.id} entry={entry} />  
-                ) )}
-             </ul>
-        </div>
-      )}
-    </div>
-    </div>
-)}
-</div> 
-);
+        )}
+      </div> 
+  );
 }
 
 function EntryListItem({ entry, }: {entry: Awaited<ReturnType<typeof loader>>["entries"][number]}){
