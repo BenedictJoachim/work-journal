@@ -38,17 +38,23 @@ export async function action ({request}: ActionFunctionArgs) {
   });
 }
 
-export async function loader({request}: LoaderFunctionArgs){
-  let session = await getSession(request.headers.get("cookie"));
-  let db = new PrismaClient();
-  let entries = await db.entry.findMany();
+export async function loader({ request }: LoaderFunctionArgs) {
+  try {
+    let session = await getSession(request.headers.get("cookie"));
+    let db = new PrismaClient();
+    let entries = await db.entry.findMany();
 
-  return {
-    session: session.data,
-    entries: entries.map((entry) => ({
-    ...entry,
-    date: entry.date.toISOString().substring(0, 10),
-  }))}
+    return {
+      session: session.data,
+      entries: entries.map((entry) => ({
+        ...entry,
+        date: entry.date.toISOString().substring(0, 10),
+      })),
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Response('An error occurred retrieving data', { status: 500 });
+  }
 }
 
 export default function Index() {

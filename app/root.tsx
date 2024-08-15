@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import "./tailwind.css";
 
@@ -73,4 +74,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <p>Whoops!</p>
+        {/* add the UI you want your users to see */}
+        <Scripts />
+      </body>
+    </html>
+  );
 }
