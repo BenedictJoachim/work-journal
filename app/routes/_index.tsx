@@ -16,7 +16,10 @@ export const meta: MetaFunction = () => {
 export async function action ({request}: ActionFunctionArgs) {
   let session = await getSession(request.headers.get("cookie"));
   if (!session.data.isAdmin) {
-    throw new Response("Not authenticated", { status: 401 });
+    throw new Response("Not authenticated.", { 
+      status: 401,
+      statusText: "Not authentiacated."
+     });
   }
 
   const db = new PrismaClient()
@@ -73,7 +76,6 @@ export default function Index() {
   }, {})
 
   let weeks = Object.keys(entriesByWeek)
-    .sort((a, b) => a.localeCompare(b))
     .map((dateString) => ({
       dateString,
       work: entriesByWeek[dateString].filter(entry => entry.type === "work"),
@@ -84,62 +86,62 @@ export default function Index() {
   return (
       <div className="">
         {session.isAdmin &&( 
-            <div className="my-8 border p-2">
+            <div className="my-8 rounded-lg border border-gray-700/30 bg-gray-800/40 p-4">
+              <p className='text-sm font-medium text-gray-500'>New Entry</p>
               <EntryForm />
             </div>
         )}
 
-        {weeks.map((week)=>
-        <div key={week.dateString} className="mt-4 border-l-8 border-indigo-500 py-1 pl-2">
-          <p className="font-bold text-indigo-300">Week of {format(parseISO(week.dateString), "MMMM do")}</p>
+        <div className='mt-12 space-y-12 border-l-2 border-sky-500/[.15] pl-5'>
+          {weeks.map((week)=>
+          <div key={week.dateString} className="mt-4 relative">
+            <div className='absolute left-[-30px] p-1 rounded-full bg-gray-900'>
+              <div className='border border-sky-500 h-[10px] w-[10px] rounded-full bg-gray-900'>
 
-        <div className="mt-4 space-y-4">
-          {week.work.length > 0 && (
-            <div className="mt-3">
-              <p>Work</p>
-                <ul className="ml-8 list-disc">
-                  {week.work.map(entry => (
-                    <EntryListItem key={entry.id} entry={entry} canEdit={session.isAdmin} />
-                    ) )}
-                </ul>
+              </div>
             </div>
-          )}
-          {week.learnings.length > 0 && (
-            <div className="mt-3">
-              <p>Learnings</p>
-                <ul className="ml-8 list-disc">
-                  {week.learnings.map(entry => (
-                    <EntryListItem key={entry.id} entry={entry} canEdit={session.isAdmin} />
-                  ) )}
-                </ul>
+            <p className="pt-1 font-bold text-xs tracking-wider text-sky-300 uppercase">
+              {format(parseISO(week.dateString), "MMMM dd, yyyy")}
+            </p>
+            <div className="mt-4 space-y-4">
+              <EntryList entries={week.work} label={'Work'} />
+              <EntryList entries={week.learnings} label={'Learnings'} />
+              <EntryList entries={week.intrestingThings} label={'Interesting Things'} />
             </div>
-          )}
-          {week.intrestingThings.length > 0 && (
-            <div className="mt-3">
-              <p>Interesting Things</p>
-                <ul className="ml-8 list-disc">
-                  {week.intrestingThings.map(entry => (
-                    <EntryListItem key={entry.id} entry={entry} canEdit={session.isAdmin} />  
-                    ) )}
-                </ul>
-            </div>
+          </div>
           )}
         </div>
-        </div>
-        )}
+
       </div> 
   );
 }
 
-function EntryListItem({ entry, canEdit }: {entry: Awaited<ReturnType<typeof loader>>["entries"][number], canEdit: boolean}){
+type Entry = Awaited<ReturnType<typeof loader>>["entries"][number];
+
+function EntryList ({ entries, label }: {entries: Entry, label:string}){
+  return entries.length > 0 ? (
+    <div className="mt-3">
+    <p className='font-semibold text-white'>{label}</p>
+      <ul className="mt-2 space-y-4">
+        {entries.map(entry => (
+          <EntryListItem key={entry.id} entry={entry} />
+          ) )}
+      </ul>
+  </div>
+  ) : null;
+};
+
+function EntryListItem({ entry }: {entry: Entry}){
+  let { session} = useLoaderData<typeof loader>();
+
   return (
     <li 
     className='group'
     >
       {entry.text} 
-      {canEdit &&
+      {session.isAdmin &&
             <Link 
-              className='ml-2 text-blue-500 opacity-0 group-hover:opacity-100' to={`entries/${entry.id}/edit`}      >
+              className='ml-2 text-sky-500 opacity-0 group-hover:opacity-100' to={`entries/${entry.id}/edit`}      >
                 Edit
             </Link>
       }
