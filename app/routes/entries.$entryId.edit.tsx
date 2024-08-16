@@ -83,8 +83,8 @@ export default function EditPage() {
 
   return (
     <div className="mt-4">
-      <div className="mt-8 rounded-lg border border-gray-700/30 bg-gray-800/40 p-4">
-        <p className="text-sm font-medium text-gray-500">Editing entry {entry.id}</p>
+      <div className="mt-8 rounded-lg border border-gray-700/30 bg-gray-800/40 p-4 lg:mb-20 lg:p-6">
+        <p className="text-sm font-medium text-gray-500 lg:text-base">Editing entry {entry.id}</p>
         <EntryForm entry={entry} />
       </div>
 
@@ -93,7 +93,7 @@ export default function EditPage() {
           <button
             name="_action"
             value="delete"
-            className="text-gray-500 underline"
+            className="text-sm text-gray-500 underline"
           >
             Delete this entry...
           </button>

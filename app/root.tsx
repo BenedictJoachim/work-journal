@@ -52,28 +52,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-        <div className="p-10">
+      <body className="mx-auto max-w-xl p-4 lg:max-w-7xl">
         <header>
-          <div className="flex justify-between text-sm">
-            <p className="uppercase"><span className="text-gray-500 font-semibold">ben</span><span className="font-bold text-gray-200">ng'waja</span></p>
-            {session.isAdmin 
-            ? <Form method="post"><button>Log out</button></Form>
-            : <Link to={"/login"}>Log in</Link>
-            }
-          </div>
-          <div className="my-16">
-            <div className="text-center">
-              <h1 className="text-5xl text-white font-semibold tracking-tighter">
-                <Link to="/">Work Journal</Link>
-              </h1>
-              <p className="mt-2 tracking-tight text-gray-500">Doings and Learnings. Updated weekly</p>
+          <div className="flex items-center justify-between lg:border-b lg:border-gray-800 lg:pt-1 lg:pb-5">
+            <p className="text-sm uppercase lg:text-lg">
+              <span className="text-gray-500 font-semibold">ben</span>
+              <span className="font-bold text-gray-200">ng'waja</span>
+            </p>
+            <div className="text-sm font-medium text-gray-500 hover:text-gray-200">
+              {session.isAdmin
+              ? <Form method="post"><button>Log out</button></Form>
+              : <Link to={"/login"}>Log in</Link>
+              }
             </div>
           </div>
-
+          <div className="my-20 lg:my-28">
+            <div className="text-center">
+              <h1 className="text-5xl font-semibold tracking-tighter text-white lg:text-7xl">
+                <Link to="/">Work Journal</Link>
+              </h1>
+              <p className="mt-2 tracking-tight text-gray-500 lg:mt-4 lg:text-2xl">Doings and Learnings. Updated weekly</p>
+            </div>
+          </div>
         </header>
-            {children}
-        </div>
+            <main className="mx-auto max-w-3xl">
+              {children}
+            </main>
         <ScrollRestoration />
         <Scripts />
       </body>
