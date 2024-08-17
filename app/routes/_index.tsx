@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
-import { useEffect, useRef } from "react";
+import { db } from 'lib/turso.server';
+import { useRef } from "react";
 import EntryForm from '~/components/entry-form';
 import { getSession } from '~/session';
 
@@ -22,7 +22,7 @@ export async function action ({request}: ActionFunctionArgs) {
      });
   }
 
-  const db = new PrismaClient()
+  // const db = new PrismaClient()
   // use `prisma` in your application to read and write data in your DB
 
   let formData = await request.formData();
@@ -44,7 +44,7 @@ export async function action ({request}: ActionFunctionArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
   try {
     let session = await getSession(request.headers.get("cookie"));
-    let db = new PrismaClient();
+    // let db = new PrismaClient();
     let entries = await db.entry.findMany();
 
     return {

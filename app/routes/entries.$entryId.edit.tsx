@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
+import { db } from "lib/turso.server";
 import type { FormEvent } from "react";
 import EntryForm from "~/components/entry-form";
 import { getSession } from "~/session";
@@ -10,7 +10,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  let db = new PrismaClient();
+  // let db = new PrismaClient();
   let entry = await db.entry.findUnique({ where: { id: +params.entryId } });
 
   if (!entry) {
@@ -34,7 +34,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  let db = new PrismaClient();
+  // let db = new PrismaClient();
   let formData = await request.formData();
   let { _action, date, type, text } = Object.fromEntries(formData);
 

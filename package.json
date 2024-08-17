@@ -11,6 +11,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@libsql/client": "^0.8.1",
+    "@prisma/adapter-libsql": "^5.18.0",
     "@prisma/client": "^5.18.0",
     "@remix-run/node": "^2.11.1",
     "@remix-run/react": "^2.11.1",
